@@ -5,6 +5,8 @@ import { AuthRoute } from "../feature/auth/route";
 import { PrivateLayout } from "../layouts/private-layout";
 import { ProfissionaisRoute } from "../feature/profissionais/route";
 import { ServicosRoute } from "@/feature/servicos/routes";
+import { StockMovementRoute } from "@/feature/stockmovement/route";
+import { ClientRoutes } from "@/feature/client/route";
 
 export const router = createBrowserRouter([
 
@@ -18,6 +20,9 @@ export const router = createBrowserRouter([
       ...DashboardRoute,
       ...ProfissionaisRoute,
       ...ServicosRoute,
+      ...DashboardRoute,
+      ...ClientRoutes,
+      ...StockMovementRoute
     ],
   },
 ]);

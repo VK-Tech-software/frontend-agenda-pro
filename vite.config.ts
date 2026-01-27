@@ -14,6 +14,10 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: Number(process.env.PORT) || 5173,
+    hmr: {
+      host: process.env.HMR_HOST ?? "localhost",
+      port: Number(process.env.HMR_PORT) || 5173,
+    },
   }
 
 })
