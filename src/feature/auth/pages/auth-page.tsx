@@ -18,7 +18,7 @@ export default function AuthPage() {
   const { showAlert } = useAlert();
 
   async function handleLogin() {
-    if (!email || !password) {
+    if (email == "" || password == "") {
       showAlert({
         title: "Falha na autenticação",
         message: "Informe todas as credenciais obrigatórias.",
@@ -31,7 +31,7 @@ export default function AuthPage() {
       navigate('/empresa/cadastro')
     } catch (error) {
       showAlert({
-        title: "Falha na autenticação",
+        title: "Falha na autenticação" + error,
         message: "Erro ao autenticar.",
         type: "destructive",
       });

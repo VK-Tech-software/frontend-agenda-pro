@@ -73,7 +73,7 @@ export const RegisterPage = () => {
     const onSubmit = async (data: RegisterFormValues) => {
         setIsLoading(true);
         try {
-            const { confirmPassword, ...payload } = data;
+            const {...payload } = data;
             await onRegister(payload);
             showAlert({
                 title: "Conta criada com sucesso",
@@ -83,7 +83,7 @@ export const RegisterPage = () => {
             navigate("/login");
         } catch (error) {
             showAlert({
-                title: "Erro ao criar conta",
+                title: "Erro ao criar conta" + error,
                 message: "Erro ao criar conta",
                 type: "destructive",
             });
