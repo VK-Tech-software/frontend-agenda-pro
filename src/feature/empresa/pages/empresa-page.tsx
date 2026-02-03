@@ -2,7 +2,7 @@ import { Button } from "../../../components/ui/button"
 import { Card, CardContent } from "../../../components/ui/card"
 import { Input } from "../../../components/ui/input"
 import { Label } from "../../../components/ui/label"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useEmpresaStore } from "../stores/empresa-store"
 import { useAlert } from "../../../hooks/use-alert"
 import { useNavigate } from "react-router-dom"
@@ -13,7 +13,7 @@ type EmpresaFormData = Omit<EmpresaDTO, "userId">;
 
 export const EmpresaPage = () => {
   const navigate = useNavigate();
-  const { createEmpresa, loading } = useEmpresaStore();
+  const { createEmpresa, loading, fetchByUserId } = useEmpresaStore();
   const { showAlert } = useAlert();
   const { user } = AuthStore();
 
@@ -24,6 +24,17 @@ export const EmpresaPage = () => {
     city: "",
     state: ""
   });
+
+  useEffect(() => {
+    const loadCompany = async () => {
+      if (!user?.id) return;
+      const company = await fetchByUserId(user.id);
+      if (company?.active) {
+        navigate("/dashboard");
+      }
+    };
+    loadCompany();
+  }, [fetchByUserId, navigate, user?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

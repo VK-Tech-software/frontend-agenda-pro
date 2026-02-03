@@ -5,6 +5,7 @@ import { Input } from "../../../components/ui/input"
 import { Card, CardContent } from "../../../components/ui/card"
 import { Separator } from "../../../components/ui/separator"
 import { AuthStore } from "../stores/auth-store"
+import { useEmpresaStore } from "../../empresa/stores/empresa-store"
 import { useAlert } from "../../../hooks/use-alert"
 import { useNavigate } from "react-router-dom"
 
@@ -12,6 +13,7 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false)
   const { onLogin, loading } = AuthStore()
+  const { fetchByUserId } = useEmpresaStore();
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -28,7 +30,17 @@ export default function AuthPage() {
     }
     try {
       await onLogin(email, password)
-      navigate('/empresa/cadastro')
+      const loggedUser = AuthStore.getState().user;
+      if (!loggedUser?.id) {
+        navigate('/empresa/cadastro');
+        return;
+      }
+      const company = await fetchByUserId(loggedUser.id);
+      if (company?.active) {
+        navigate('/dashboard')
+      } else {
+        navigate('/empresa/cadastro')
+      }
     } catch (error) {
       showAlert({
         title: "Falha na autenticação" + error,

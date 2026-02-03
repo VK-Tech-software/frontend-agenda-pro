@@ -11,12 +11,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { useServiceStore } from "../stores/service-store";
 import { useAlert } from "@/hooks/use-alert";
+import { ServiceService, type ServiceDTO } from "../services/service-service";
+import Select from 'react-select';
 
 const serviceSchema = z.object({
   name: z.string().min(2, "Nome inválido"),
   description: z.string().optional().or(z.literal("")),
   price: z.number().min(0),
   durationMinutes: z.number().int().min(1),
+  productIds: z.array(z.number()).optional(),
 });
 
 type ServiceForm = z.infer<typeof serviceSchema>;
@@ -26,17 +29,24 @@ export const ServicePage = () => {
   const { showAlert } = useAlert();
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const form = useForm<ServiceForm>({ resolver: zodResolver(serviceSchema), defaultValues: { name: "", description: "", price: 0, durationMinutes: 30 } });
+  const [availableProducts, setAvailableProducts] = useState<any[]>([]);
+  const form = useForm<ServiceForm>({ resolver: zodResolver(serviceSchema), defaultValues: { name: "", description: "", price: 0, durationMinutes: 30, productIds: [] } });
 
-  useEffect(() => { fetchByCompany(1); }, [fetchByCompany]);
+  useEffect(() => { fetchByCompany(1); loadProducts(1); }, [fetchByCompany]);
+
+  const loadProducts = async (companyId: number) => {
+    const prods = await ServiceService.getAvailableProducts(companyId);
+    setAvailableProducts(prods.map((p: any) => ({ value: p.id, label: p.name })));
+  };
 
   const onSubmit = async (data: ServiceForm) => {
     try {
+      const payload = { ...data, companyId: 1, productIds: data.productIds || [] } as any;
       if (editingId) {
-        await updateService(editingId, { ...data, companyId: 1 });
+        await updateService(editingId, payload);
         showAlert({ title: "Sucesso", message: "Serviço atualizado", type: "success" });
       } else {
-        await createService({ ...data, companyId: 1 });
+        await createService(payload);
         showAlert({ title: "Sucesso", message: "Serviço criado", type: "success" });
       }
       setIsOpen(false);
@@ -47,7 +57,15 @@ export const ServicePage = () => {
     }
   };
 
-  const handleEdit = (s: any) => { setEditingId(s.id); form.setValue("name", s.name); form.setValue("description", s.description || ""); form.setValue("price", s.price); form.setValue("durationMinutes", s.durationMinutes); setIsOpen(true); };
+  const handleEdit = (s: any) => {
+    setEditingId(s.id);
+    form.setValue("name", s.name);
+    form.setValue("description", s.description || "");
+    form.setValue("price", s.price);
+    form.setValue("durationMinutes", s.durationMinutes);
+    form.setValue("productIds", s.productIds || []);
+    setIsOpen(true);
+  };
   const handleDelete = async (id: number) => { if (!confirm("Confirmar exclusão?")) return; await deleteService(id); showAlert({ title: "Sucesso", message: "Serviço excluído", type: "success" }); };
 
   return (
@@ -100,7 +118,16 @@ export const ServicePage = () => {
                       <FormMessage/>
                     </FormItem>
                   )} />
-
+                  
+                  <FormField name="productIds" control={form.control} render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Produtos</FormLabel>
+                      <FormControl>
+                        <Select isMulti options={availableProducts} value={availableProducts.filter(p => field.value?.includes(p.value))} onChange={(v:any)=> field.onChange(v.map((it:any)=>it.value))} />
+                      </FormControl>
+                      <FormMessage/>
+                    </FormItem>
+                  )} />
                   <div className="flex gap-2 justify-end">
                     <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancelar</Button>
                     <Button type="submit" disabled={loading}>{loading ? <Loader2 className="animate-spin mr-2"/> : null}{editingId ? "Atualizar" : "Criar"}</Button>
