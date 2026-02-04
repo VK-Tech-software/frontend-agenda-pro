@@ -29,18 +29,21 @@ export default function AuthPage() {
       return;
     }
     try {
-      await onLogin(email, password)
-      const loggedUser = AuthStore.getState().user;
-      if (!loggedUser?.id) {
-        navigate('/empresa/cadastro');
-        return;
-      }
-      const company = await fetchByUserId(loggedUser.id);
-      if (company?.active) {
-        navigate('/dashboard')
-      } else {
+      const loggedUser = await onLogin(email, password)
+
+      console.log('loggedUser', loggedUser.id);
+
+      const company = await fetchByUserId(loggedUser.id)
+
+      console.log('company', company);
+
+      if (company == null) {
         navigate('/empresa/cadastro')
       }
+      if (company) {
+        navigate('/dashboard')
+      }
+
     } catch (error) {
       showAlert({
         title: "Falha na autenticação" + error,

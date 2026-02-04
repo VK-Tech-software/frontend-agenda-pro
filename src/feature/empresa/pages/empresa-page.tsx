@@ -55,10 +55,10 @@ export const EmpresaPage = () => {
         type: "success"
       });
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       showAlert({
         title: "Erro",
-        message: "Falha ao cadastrar empresa. Verifique os dados.",
+        message: "Erro ao cadastrar empresa: " + error.message,
         type: "destructive"
       });
     }

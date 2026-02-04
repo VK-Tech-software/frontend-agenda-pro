@@ -12,7 +12,6 @@ export type RegisterPayload = {
 export class AuthService {
   static async login(payload: { email: string; password: string }) {
     const response = await api.post("auth/login", payload)
-    console.log(response.data)
     return response.data
   }
 

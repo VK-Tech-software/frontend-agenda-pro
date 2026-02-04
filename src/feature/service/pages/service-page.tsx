@@ -11,8 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { useServiceStore } from "../stores/service-store";
 import { useAlert } from "@/hooks/use-alert";
-import { ServiceService, type ServiceDTO } from "../services/service-service";
-import Select from 'react-select';
+import type { ServiceDTO } from "../services/service-service";
+import { ProductService } from "../../product/services/product-service";
 
 const serviceSchema = z.object({
   name: z.string().min(2, "Nome inválido"),
@@ -32,10 +32,10 @@ export const ServicePage = () => {
   const [availableProducts, setAvailableProducts] = useState<any[]>([]);
   const form = useForm<ServiceForm>({ resolver: zodResolver(serviceSchema), defaultValues: { name: "", description: "", price: 0, durationMinutes: 30, productIds: [] } });
 
-  useEffect(() => { fetchByCompany(1); loadProducts(1); }, [fetchByCompany]);
+  useEffect(() => { fetchByCompany(1); loadProducts(); }, [fetchByCompany]);
 
-  const loadProducts = async (companyId: number) => {
-    const prods = await ServiceService.getAvailableProducts(companyId);
+  const loadProducts = async () => {
+    const prods = await ProductService.getAll();
     setAvailableProducts(prods.map((p: any) => ({ value: p.id, label: p.name })));
   };
 
@@ -123,7 +123,28 @@ export const ServicePage = () => {
                     <FormItem>
                       <FormLabel>Produtos</FormLabel>
                       <FormControl>
-                        <Select isMulti options={availableProducts} value={availableProducts.filter(p => field.value?.includes(p.value))} onChange={(v:any)=> field.onChange(v.map((it:any)=>it.value))} />
+                        <div className="flex flex-wrap gap-2">
+                          {availableProducts.map((p) => {
+                            const selected = Array.isArray(field.value) && field.value.includes(p.value);
+                            return (
+                              <Button
+                                key={p.value}
+                                type="button"
+                                size="sm"
+                                variant={selected ? "default" : "outline"}
+                                onClick={() => {
+                                  const current = Array.isArray(field.value) ? [...field.value] : [];
+                                  const idx = current.indexOf(p.value);
+                                  if (idx === -1) current.push(p.value);
+                                  else current.splice(idx, 1);
+                                  field.onChange(current);
+                                }}
+                              >
+                                {p.label}
+                              </Button>
+                            );
+                          })}
+                        </div>
                       </FormControl>
                       <FormMessage/>
                     </FormItem>
@@ -149,7 +170,7 @@ export const ServicePage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {services.map((s) => (
+                {services.map((s: ServiceDTO) => (
                   <TableRow key={s.id}>
                     <TableCell>{s.name}</TableCell>
                     <TableCell>{s.price.toFixed(2)}</TableCell>

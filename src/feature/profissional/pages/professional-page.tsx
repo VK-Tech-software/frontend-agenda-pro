@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,7 +40,7 @@ import {
 
 import { useProfessionalStore } from "../stores/professional-store";
 import { useAlert } from "@/hooks/use-alert";
-import { AuthStore } from "../../auth/stores/auth-store";
+// AuthStore removed (unused)
 
 const professionalSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
@@ -53,9 +52,7 @@ const professionalSchema = z.object({
 type ProfessionalFormValues = z.infer<typeof professionalSchema>;
 
 export const ProfessionalPage = () => {
-  const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const { user } = AuthStore();
 
   const {
     professionals,

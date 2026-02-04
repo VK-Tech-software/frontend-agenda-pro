@@ -24,10 +24,15 @@ export const useEmpresaStore = create<EmpresaState>()(
             loading: false,
             error: null,
             createEmpresa: async (data: EmpresaPayload, userId: number) => {
-                set({ loading: true });
+                set({ loading: true, error: null });
                 try {
                     const res = await EmpresaService.createEmpresa({ ...data, userId });
                     set({ company: res, companies: res?.id ? [res] : [] });
+                    return res;
+                } catch (err: any) {
+                    const message = err?.response?.data?.error?.description ?? err?.response?.data?.message ?? "Erro ao criar empresa";
+                    set({ error: message });
+                    throw err;
                 } finally {
                     set({ loading: false });
                 }

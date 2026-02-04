@@ -3,7 +3,7 @@ import { ClientPage } from "./pages/client-page";
 
 export const ClientRoutes: RouteObject[] = [
   {
-    path: '/clients',
+    path: '/clientes',
     Component: ClientPage
   }
 ]

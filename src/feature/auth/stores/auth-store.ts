@@ -37,14 +37,20 @@ export const AuthStore = create<AuthState>()(
       onLogin: async (email: string, password: string) => {
         set({ loading: true })
         try {
-          const res = await AuthService.login({ email, password });
-          console.log(res)
-          const { user, accessToken } = res;
-          set({ user: user, token: accessToken });
-          set({ loading: false })
+          const res = await AuthService.login({ email, password })
+
+          const { user, accessToken } = res.data
+
+          set({
+            user,
+            token: accessToken,
+            loading: false,
+          })
+
+          return user
         } catch (error) {
           set({ loading: false })
-          throw error;
+          throw error
         }
       },
       logout: () => {

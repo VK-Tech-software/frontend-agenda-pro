@@ -33,7 +33,7 @@ export const useAppointmentStore = create<AppointmentState>()(
       fetchById: async (id: number) => {
         set({ loading: true, error: null });
         try {
-          const data = await AppointmentService.getById(id);
+          await AppointmentService.getById(id);
           set({ loading: false });
         } catch (err: any) {
           set({ loading: false, error: err?.response?.data?.message ?? "Erro ao carregar agendamento" });

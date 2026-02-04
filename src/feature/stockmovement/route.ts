@@ -3,7 +3,7 @@ import { StockMovementPage } from "./pages/stockmovement-page";
 
 export const StockMovementRoute: RouteObject[] = [
   {
-    path: "/stock-movements",
+    path: "/estoque/movimentacoes",
     Component: StockMovementPage,
   }
 ]

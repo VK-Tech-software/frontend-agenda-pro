@@ -74,7 +74,11 @@ export const RegisterPage = () => {
         setIsLoading(true);
         try {
             const {...payload } = data;
-            await onRegister(payload);
+            // map frontend role values to backend expected values
+            if (payload.role === "client") payload.role = "cliente" as any;
+            if (payload.role === "professional") payload.role = "profissional" as any;
+            if (payload.role === "manager") payload.role = "gerente" as any;
+            await onRegister(payload as any);
             showAlert({
                 title: "Conta criada com sucesso",
                 message: "Conta criada com sucesso",
