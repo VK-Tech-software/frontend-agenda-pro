@@ -11,13 +11,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { useClientStore } from "../stores/client-store";
 import { useAlert } from "@/hooks/use-alert";
+import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "@/components/ui/select";
 
 const clientSchema = z.object({
   name: z.string().min(3, "Nome inválido"),
-  email: z.string().email("E-mail inválido"),
-  cnpjcpf: z.string().optional().or(z.literal("")),
   phone: z.string().optional().or(z.literal("")),
-  password: z.string().min(6).optional(),
+  origem: z.string().optional().or(z.literal("")),
 });
 
 type ClientForm = z.infer<typeof clientSchema>;
@@ -27,7 +26,7 @@ export const ClientPage = () => {
   const { showAlert } = useAlert();
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const form = useForm<ClientForm>({ resolver: zodResolver(clientSchema), defaultValues: { name: "", email: "", cnpjcpf: "", phone: "", password: "" } });
+  const form = useForm<ClientForm>({ resolver: zodResolver(clientSchema), defaultValues: { name: "", email: "", cnpjcpf: "", phone: "", origem: "", password: "" } });
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
@@ -48,7 +47,7 @@ export const ClientPage = () => {
     }
   };
 
-  const handleEdit = (c: any) => { setEditingId(c.id); form.setValue("name", c.name); form.setValue("email", c.email); form.setValue("cnpjcpf", c.cnpjcpf || ""); form.setValue("phone", c.phone || ""); setIsOpen(true); };
+  const handleEdit = (c: any) => { setEditingId(c.id); form.setValue("name", c.name); form.setValue("email", c.email); form.setValue("cnpjcpf", c.cnpjcpf || ""); form.setValue("phone", c.phone || ""); form.setValue("origem", c.origem || ""); setIsOpen(true); };
   const handleDelete = async (id: number) => { if (!confirm("Confirmar exclusão?")) return; await deleteClient(id); showAlert({ title: "Sucesso", message: "Cliente excluído", type: "success" }); };
 
   return (
@@ -76,37 +75,32 @@ export const ClientPage = () => {
                       <FormControl><Input {...field} /></FormControl>
                       <FormMessage/>
                     </FormItem>
-                  )} />
-
-                  <FormField name="email" control={form.control} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>E-mail</FormLabel>
-                      <FormControl><Input type="email" {...field} /></FormControl>
-                      <FormMessage/>
-                    </FormItem>
-                  )} />
-
-                  <FormField name="cnpjcpf" control={form.control} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CPF/CNPJ (opcional)</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage/>
-                    </FormItem>
-                  )} />
+                  )} />       
 
                   <FormField name="phone" control={form.control} render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefone (opcional)</FormLabel>
+                      <FormLabel>Telefone</FormLabel>
                       <FormControl><Input {...field} /></FormControl>
                       <FormMessage/>
                     </FormItem>
                   )} />
 
-                  <FormField name="password" control={form.control} render={({ field }) => (
+                  <FormField name="origem" control={form.control} render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Senha (opcional)</FormLabel>
-                      <FormControl><Input type="password" {...field} /></FormControl>
-                      <FormMessage/>
+                      <FormLabel>Origem</FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a origem" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="internet">Internet</SelectItem>
+                            <SelectItem value="indicacao">Indicação</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )} />
 

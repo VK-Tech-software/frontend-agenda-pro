@@ -3,15 +3,10 @@ import { api } from "../../../app/api";
 export interface ClientDTO {
   id?: number;
   name: string;
-  email: string;
-  cnpjcpf?: string;
   phone?: string;
-  active?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+  origem?: string;}
 
-export type CreateClientRequest = Omit<ClientDTO, "id" | "createdAt" | "updatedAt" | "active"> & { password?: string };
+export type CreateClientRequest = Omit<ClientDTO, "id" | "active"> & { password?: string };
 export type UpdateClientRequest = CreateClientRequest;
 
 export class ClientService {
