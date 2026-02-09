@@ -29,20 +29,25 @@ export default function AuthPage() {
       return;
     }
     try {
-      const loggedUser = await onLogin(email, password)
+      await onLogin(email, password)
 
-      console.log('loggedUser', loggedUser.id);
+      const user = AuthStore.getState().user
 
-      const company = await fetchByUserId(loggedUser.id)
+      console.log('user', user);
 
-      console.log('company', company);
-
-      if (company == null) {
+      if (!user || !user.id) {
         navigate('/empresa/cadastro')
+        return
       }
-      if (company) {
+
+      const company = await fetchByUserId(user.id)
+
+      if (company && company.active) {
         navigate('/dashboard')
+        return
       }
+
+      navigate('/empresa/cadastro')
 
     } catch (error) {
       showAlert({

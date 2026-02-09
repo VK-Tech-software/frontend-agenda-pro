@@ -18,7 +18,7 @@ type AuthState = {
   user: User | null;
   token: string | null;
   loading: boolean,
-  onLogin: (email: string, password: string) => Promise<void>;
+  onLogin: (email: string, password: string) => Promise<User>;
   logout: () => void;
 }
 
