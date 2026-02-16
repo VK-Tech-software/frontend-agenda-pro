@@ -12,13 +12,14 @@ import { AppointmentPublicRoute, AppointmentRoute } from "@/feature/appointment/
 import { PermissionsRoute } from "@/feature/permissions/route";
 import { ConfigRoute } from "@/feature/config/route";
 import { CaseRoute } from "@/feature/case/route";
+import { BillingRoutes } from "@/feature/billing/route";
 
 export const router = createBrowserRouter([
 
   ...AuthRoute,
   ...EmpresaRoute,
   ...AppointmentPublicRoute,
-
+  ...BillingRoutes,
 
   {
     path: "/",

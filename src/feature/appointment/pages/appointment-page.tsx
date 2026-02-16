@@ -325,8 +325,8 @@ export const AppointmentPage = () => {
                   </div>
                 </div>
               ))}
-              title={editingId ? `Editar ${labels.appointments.singular.toLowerCase()}` : `Novo ${labels.appointments.singular.toLowerCase()}`}
-              description={`Selecione cliente, ${labels.professionals.singular.toLowerCase()}, ${labels.services.singular.toLowerCase()} e horário`}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -339,8 +339,8 @@ export const AppointmentPage = () => {
             setInitialForm(undefined);
           }
         }}
-        title={editingId ? "Editar agendamento" : "Novo agendamento"}
-        description="Selecione cliente, profissional, serviço e horário"
+        title={editingId ? `Editar ${labels.appointments.singular.toLowerCase()}` : `Novo ${labels.appointments.singular.toLowerCase()}`}
+        description={`Selecione cliente, ${labels.professionals.singular.toLowerCase()}, ${labels.services.singular.toLowerCase()} e horário`}
         initialValues={initialForm}
         professionals={professionalOptions}
         clients={clientOptions}

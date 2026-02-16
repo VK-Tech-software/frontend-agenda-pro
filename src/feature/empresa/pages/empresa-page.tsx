@@ -54,7 +54,7 @@ export const EmpresaPage = () => {
         message: "Empresa cadastrada com sucesso!",
         type: "success"
       });
-      navigate("/dashboard");
+      navigate("/planos");
     } catch (error: any) {
       showAlert({
         title: "Erro",
@@ -84,7 +84,6 @@ export const EmpresaPage = () => {
             </p>
 
             <ul className="mt-8 space-y-3 text-sm">
-              <li>✔ 14 dias grátis, sem cartão</li>
               <li>✔ Suporte em português</li>
               <li>✔ Cancele quando quiser</li>
               <li>✔ Migração assistida</li>
@@ -103,7 +102,7 @@ export const EmpresaPage = () => {
 
                 <h2 className="text-2xl font-bold">Crie sua conta</h2>
                 <p className="text-sm text-muted-foreground">
-                  Comece seu teste grátis de 14 dias
+                  Comece sua conta agora
                 </p>
               </header>
 
@@ -155,7 +154,7 @@ export const EmpresaPage = () => {
                 </div>
 
                 <Button className="w-full bg-blue-950 hover:bg-blue-800" disabled={loading}>
-                  {loading ? "Criando..." : "Criar conta grátis"}
+                  {loading ? "Criando..." : "Criar conta"}
                 </Button>
               </form>
 
