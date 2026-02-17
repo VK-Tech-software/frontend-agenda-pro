@@ -43,7 +43,7 @@ export const PrivateLayout = () => {
 
   useEffect(() => {
     if (!token) return;
-    if (user?.tipoConta?.toLowerCase() === "administrador") return;
+    if (user?.tipoConta?.toLowerCase() === "admin") return;
     if (location.pathname === "/planos") return;
 
     const searchParams = new URLSearchParams(location.search);
