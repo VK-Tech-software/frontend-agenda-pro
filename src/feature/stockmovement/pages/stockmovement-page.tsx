@@ -14,6 +14,7 @@ import { useAlert } from "@/hooks/use-alert";
 import { useProductStore } from "@/feature/product/stores/product-store";
 import { useEmpresaStore } from "@/feature/empresa/stores/empresa-store";
 import { AuthStore } from "@/feature/auth/stores/auth-store";
+import { DashboardStockMovementPage } from "../components/dashboard-page";
 
 const movementSchema = z.object({
   stockId: z.coerce.number().int().min(1),
@@ -104,26 +105,7 @@ export const StockMovementPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8">
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 mb-6">
-        <Card>
-          <CardHeader>
-            <CardDescription>Entradas</CardDescription>
-            <CardTitle>{totals.totalIn}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription>Saídas</CardDescription>
-            <CardTitle>{totals.totalOut}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription>Saldo</CardDescription>
-            <CardTitle>{totals.net}</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
+      <DashboardStockMovementPage totals={totals} />
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
