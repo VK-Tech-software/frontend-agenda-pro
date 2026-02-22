@@ -1,8 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import type { SettingsDTO } from "@/feature/config/services/settings-service";
 
 interface BrandingTabProps {
@@ -40,40 +38,6 @@ export const BrandingTab = ({ settings, onChange }: BrandingTabProps) => (
             placeholder="agenda.suaempresa.com"
             value={settings.custom_domain ?? ""}
             onChange={(e) => onChange({ custom_domain: e.target.value })}
-          />
-        </div>
-      </div>
-      <Separator />
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium">Marca branca</p>
-          <p className="text-xs text-muted-foreground">Remova a marca AgendaPro</p>
-        </div>
-        <Button variant="outline">Ativar</Button>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label>Nome do remetente</Label>
-          <Input
-            placeholder="AgendaPro"
-            value={settings.email_from_name ?? ""}
-            onChange={(e) => onChange({ email_from_name: e.target.value })}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Email do remetente</Label>
-          <Input
-            placeholder="contato@suaempresa.com"
-            value={settings.email_from_address ?? ""}
-            onChange={(e) => onChange({ email_from_address: e.target.value })}
-          />
-        </div>
-        <div className="space-y-2 md:col-span-2">
-          <Label>Favicon URL</Label>
-          <Input
-            placeholder="https://.../favicon.ico"
-            value={settings.favicon_url ?? ""}
-            onChange={(e) => onChange({ favicon_url: e.target.value })}
           />
         </div>
       </div>

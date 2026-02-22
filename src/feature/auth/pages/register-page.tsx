@@ -197,9 +197,7 @@ export const RegisterPage = () => {
                                                         {...field}
                                                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pl-10"
                                                     >
-                                                        <option value="cliente">Cliente</option>
                                                         <option value="profissional">Profissional</option>
-                                                        <option value="admin">Administrador</option>
                                                     </select>
                                                 </div>
                                             </FormControl>

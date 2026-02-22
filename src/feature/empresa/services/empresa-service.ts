@@ -26,7 +26,14 @@ export class EmpresaService {
 
     static async getByUserId(userId: number): Promise<EmpresaDTO | null> {
         const { data } = await api.get(`/companies/user/${userId}`);
-        return data.data ?? null;
+        // Normalize different backend shapes:
+        // - { data: { ... } }
+        // - { data: [ ... ] }
+        // - [ ... ]
+        // - { ... }
+        const payload = data?.data ?? data;
+        if (Array.isArray(payload)) return payload.length ? payload[0] : null;
+        return payload ?? null;
     }
 
     static async update(id: number, data: Omit<EmpresaDTO, "userId" | "id">): Promise<EmpresaDTO> {

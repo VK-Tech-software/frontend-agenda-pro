@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useAlert } from "@/hooks/use-alert";
 import type { SettingsDTO } from "@/feature/config/services/settings-service";
 import { useSettingsStore } from "@/feature/config/store/settings-store";
+import { AuthStore } from "@/feature/auth/stores/auth-store";
 import { AgendaTab } from "@/feature/config/pages/components/agenda-tab";
-import { AuditTab } from "@/feature/config/pages/components/audit-tab";
 import { BillingTab } from "@/feature/config/pages/components/billing-tab";
 import { BrandingTab } from "@/feature/config/pages/components/branding-tab";
 import { CompanyTab } from "@/feature/config/pages/components/company-tab";
@@ -14,29 +14,30 @@ const tabs = [
     { id: "agenda", label: "Preferências da agenda" },
     { id: "billing", label: "Cobrança e plano" },
     { id: "branding", label: "Personalização" },
-    { id: "audit", label: "Auditoria/Logs" },
 ] as const;
 
 export const ConfigPage = () => {
     const [activeTab, setActiveTab] = useState<(typeof tabs)[number]["id"]>("company");
     const { showAlert } = useAlert();
-
-    const { settings, loading, setSettings, fetchSettings, updateSettings } = useSettingsStore();
+    const { settings, loading, setSettings, fetchSettings, updateSettings, fetchCompanyInfo, company } = useSettingsStore();
 
     const tabContent = useMemo(() => {
         return {
-            company: <CompanyTab settings={settings} onChange={(patch) => setSettings(patch)} />,
+            company: <CompanyTab settings={settings} onChange={(patch) => setSettings(patch)} company={company} />,
             agenda: <AgendaTab settings={settings} onChange={(patch) => setSettings(patch)} />,
             billing: <BillingTab />,
             branding: <BrandingTab settings={settings} onChange={(patch) => setSettings(patch)} />,
-            audit: <AuditTab />,
         } as const;
-    }, [setSettings, settings]);
+    }, [setSettings, settings, company]);
 
     useEffect(() => {
         const loadSettings = async () => {
             try {
                 await fetchSettings();
+                const persisted = sessionStorage.getItem("auth-storage");
+                const persistedUserId = persisted ? (JSON.parse(persisted).state?.user?.id as number | undefined) : undefined;
+                const authUserId = AuthStore.getState().user?.id ?? persistedUserId;
+                if (authUserId) await fetchCompanyInfo(authUserId);
             } catch (error) {
                 console.error(error);
                 showAlert({ title: "Erro", message: "Não foi possível carregar as configurações", type: "error" });
@@ -44,7 +45,7 @@ export const ConfigPage = () => {
         };
 
         loadSettings();
-    }, [fetchSettings, showAlert]);
+    }, [fetchSettings, fetchCompanyInfo, settings.company_id, showAlert]);
 
     const handleSave = async () => {
         try {

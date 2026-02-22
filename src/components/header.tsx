@@ -68,7 +68,7 @@ export const HeaderComponents = () => {
   const notificationsList = useMemo(() => notifications ?? [], [notifications]);
 
   return (
-    <header className="border-b bg-white px-4 py-3 sm:px-6 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <header className="border-b bg-white px-4 py-2 sm:px-6 sm:py-3 flex items-center justify-between gap-3">
       <div className="flex items-start gap-3">
         <SidebarTrigger className="md:hidden" />
         <div>
@@ -118,7 +118,7 @@ export const HeaderComponents = () => {
               )}
             </button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[480px]">
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>Notificações</DialogTitle>
               <DialogDescription>Alertas importantes para sua empresa</DialogDescription>

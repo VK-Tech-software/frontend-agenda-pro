@@ -64,7 +64,7 @@ export const PrivateLayout = () => {
 
     if (successCheckout) {
       let attempts = 0;
-      const maxAttempts = 6; // ~12s
+      const maxAttempts = 6; 
 
       const pollStatus = async () => {
         attempts += 1;
@@ -99,8 +99,7 @@ export const PrivateLayout = () => {
 
       <div className="flex-1 flex flex-col">
         <HeaderComponents />
-
-        <main className="flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6">
+        <main className="flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6 ">
           <Outlet />
         </main>
       </div>

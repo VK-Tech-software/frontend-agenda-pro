@@ -3,15 +3,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import type { SettingsDTO } from "@/feature/config/services/settings-service";
+import type { EmpresaDTO } from "@/feature/empresa/services/empresa-service";
 import PublicLinkGenerator from "./public-link-generator";
 
 interface CompanyTabProps {
   settings: SettingsDTO;
   onChange: (patch: Partial<SettingsDTO>) => void;
+  company?: EmpresaDTO | null;
 }
 
-export const CompanyTab = ({ settings, onChange }: CompanyTabProps) => (
-  <Card>
+export const CompanyTab = ({ settings, onChange, company }: CompanyTabProps) => {
+  const displayBrandName = (settings.brand_name && settings.brand_name.trim()) ? settings.brand_name : company?.name ?? "";
+
+  return (
+    <Card>
     <CardHeader>
       <CardTitle>Perfil da empresa</CardTitle>
       <CardDescription>Dados básicos e identidade do negócio</CardDescription>
@@ -20,11 +25,11 @@ export const CompanyTab = ({ settings, onChange }: CompanyTabProps) => (
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label>Nome da empresa</Label>
-          <Input
-            placeholder="AgendaPro Studios"
-            value={settings.brand_name ?? ""}
-            onChange={(e) => onChange({ brand_name: e.target.value })}
-          />
+            <Input
+              placeholder="AgendaPro Studios"
+              value={displayBrandName}
+              onChange={(e) => onChange({ brand_name: e.target.value })}
+            />
         </div>
         <div className="space-y-2">
           <Label>Segmento</Label>
@@ -43,19 +48,19 @@ export const CompanyTab = ({ settings, onChange }: CompanyTabProps) => (
         </div>
         <div className="space-y-2">
           <Label>CNPJ</Label>
-          <Input placeholder="00.000.000/0001-00" disabled value={settings.phone ?? ""}/>
+          <Input placeholder="00.000.000/0001-00" disabled value={company?.cnpj} />
         </div>
         <div className="space-y-2">
           <Label>Endereço</Label>
-          <Input placeholder="Rua Exemplo, 123" disabled />
+          <Input placeholder="Rua Exemplo, 123" disabled value={company?.address} />
         </div>
         <div className="space-y-2">
           <Label>Cidade</Label>
-          <Input placeholder="São Paulo" disabled />
+          <Input placeholder="São Paulo" disabled value={company?.city} />
         </div>
         <div className="space-y-2">
           <Label>Estado</Label>
-          <Input placeholder="SP" disabled />
+          <Input placeholder="SP" disabled value={company?.state ?? ""} />
         </div>
         <div className="space-y-2">
           <Label>Fuso horário</Label>
@@ -63,7 +68,6 @@ export const CompanyTab = ({ settings, onChange }: CompanyTabProps) => (
         </div>
       </div>
       <Separator />
-      {/* Public link generator */}
       <PublicLinkGenerator settings={settings} />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -82,3 +86,4 @@ export const CompanyTab = ({ settings, onChange }: CompanyTabProps) => (
     </CardContent>
   </Card>
 );
+}

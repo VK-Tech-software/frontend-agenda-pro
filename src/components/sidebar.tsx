@@ -40,7 +40,7 @@ export const SideBarComponents = () => {
 
   return (
     <Sidebar className="bg-white border-r">
-      <div className="h-16 flex items-center gap-3 px-6 border-b">
+      <div className="h-19 flex items-center gap-3 px-6 border-b">
         <div className="h-10 w-10 rounded-xl bg-sky-500 flex items-center justify-center text-white">
           <Calendar size={20} />
         </div>

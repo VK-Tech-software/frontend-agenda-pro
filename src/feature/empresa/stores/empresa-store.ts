@@ -92,3 +92,18 @@ export const useEmpresaStore = create<EmpresaState>()(
         }
     )
 );
+
+// Migration: sanitize persisted `empresa-storage` if `company` was stored as an array
+try {
+    const key = "empresa-storage";
+    const raw = sessionStorage.getItem(key);
+    if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.state?.company && Array.isArray(parsed.state.company)) {
+            parsed.state.company = parsed.state.company.length ? parsed.state.company[0] : null;
+            sessionStorage.setItem(key, JSON.stringify(parsed));
+        }
+    }
+} catch (e) {
+    // ignore migration errors
+}

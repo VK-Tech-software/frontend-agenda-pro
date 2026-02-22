@@ -45,4 +45,16 @@ export class BillingService {
     const { data } = await api.get("/billing/usage");
     return data?.data ?? data;
   }
+
+  static async getInvoices(month?: string) {
+    const params: Record<string, string> = {};
+    if (month) params.month = month;
+    const { data } = await api.get("/billing/invoices", { params });
+    return data.data;
+  }
+
+  static async downloadInvoice(invoiceId: string) {
+    const response = await api.get(`/billing/invoices/${invoiceId}/download`, { responseType: 'blob' });
+    return response.data as Blob;
+  }
 }

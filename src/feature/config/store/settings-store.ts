@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { SettingsService, type SettingsDTO } from "../services/settings-service";
 import { applyBranding } from "../utils/apply-branding";
+import type { EmpresaDTO } from "@/feature/empresa/services/empresa-service";
 
 const emptySettings: SettingsDTO = {
   brand_name: "",
@@ -46,16 +47,18 @@ const persistSettings = (data: SettingsDTO | null) => {
 
 interface SettingsState {
   settings: SettingsDTO;
+  company: EmpresaDTO | null;
   loading: boolean;
   error: string | null;
   setSettings: (updater: Partial<SettingsDTO> | ((prev: SettingsDTO) => SettingsDTO)) => void;
-  fetchSettings: () => Promise<void>;
+  fetchSettings: () => Promise<SettingsDTO | null>;
   fetchCompanyInfo: (userId: number) => Promise<void>;
   updateSettings: (payload: SettingsDTO) => Promise<SettingsDTO | null>;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
   settings: emptySettings,
+  company: null,
   loading: false,
   error: null,
 
@@ -76,8 +79,10 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       } else {
         set({ settings: emptySettings });
       }
+      return data ?? null;
     } catch {
       set({ error: "Erro ao carregar configurações" });
+      return null;
     } finally {
       set({ loading: false });
     }
@@ -87,16 +92,9 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     set({ loading: true, error: null });
     try {
       const data = await SettingsService.getByUserId(userId);
-      if (data) {
-        set((state) => ({
-          settings: {
-            ...state.settings,
-            company_id: data.id,
-            brand_name: data.name,
-          },
-        }));
-      }
-    } catch {
+      const companyPayload = data ?? null;
+      set(() => ({ company: companyPayload }));
+    } catch (err) {
       set({ error: "Erro ao carregar informações da empresa" });
     } finally {
       set({ loading: false });

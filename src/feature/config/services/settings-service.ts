@@ -45,6 +45,8 @@ export const SettingsService = {
 
     async getByUserId(userId: number): Promise<EmpresaDTO | null> {
         const { data } = await api.get(`/companies/user/${userId}`);
-        return data.data ?? null;
+        const resolved = data.data
+        if (Array.isArray(resolved))return resolved.length > 0 ? (resolved[0] as EmpresaDTO) : null;
+        return resolved as EmpresaDTO | null;
     }
 };
