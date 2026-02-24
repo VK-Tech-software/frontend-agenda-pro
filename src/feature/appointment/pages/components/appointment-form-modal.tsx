@@ -35,6 +35,7 @@ type AppointmentFormInput = z.input<typeof appointmentSchema>;
 interface OptionItem {
   value: number;
   label: string;
+  durationMinutes?: number;
 }
 
 interface AppointmentFormModalProps {
@@ -61,6 +62,36 @@ const defaultValues: AppointmentFormValues = {
   notes: "",
 };
 
+const addMinutesToTime = (time: string, minutesToAdd: number): string => {
+  const [hourStr, minuteStr] = time.split(":");
+  const hour = Number(hourStr);
+  const minute = Number(minuteStr);
+
+  if (!Number.isFinite(hour) || !Number.isFinite(minute)) {
+    return time;
+  }
+
+  const totalMinutes = hour * 60 + minute + Math.max(0, minutesToAdd);
+  const normalizedMinutes = ((totalMinutes % (24 * 60)) + (24 * 60)) % (24 * 60);
+  const nextHour = String(Math.floor(normalizedMinutes / 60)).padStart(2, "0");
+  const nextMinute = String(normalizedMinutes % 60).padStart(2, "0");
+
+  return `${nextHour}:${nextMinute}`;
+};
+
+const normalizeTimeValue = (time: string): string => {
+  const raw = time.trim();
+  const match = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if (!match) {
+    return raw;
+  }
+
+  const hour = String(Math.min(23, Math.max(0, Number(match[1])))).padStart(2, "0");
+  const minute = String(Math.min(59, Math.max(0, Number(match[2])))).padStart(2, "0");
+
+  return `${hour}:${minute}`;
+};
+
 export function AppointmentFormModal({
   open,
   onOpenChange,
@@ -80,12 +111,44 @@ export function AppointmentFormModal({
   });
 
   useEffect(() => {
-    form.reset({ ...defaultValues, ...initialValues });
+    form.reset({
+      ...defaultValues,
+      ...initialValues,
+      startTime: normalizeTimeValue(initialValues?.startTime ?? defaultValues.startTime),
+      endTime: normalizeTimeValue(initialValues?.endTime ?? defaultValues.endTime),
+    });
   }, [form, initialValues]);
+
+  const selectedServiceId = form.watch("serviceId");
+  const selectedStartTime = form.watch("startTime");
+
+  useEffect(() => {
+    if (!selectedServiceId || !selectedStartTime) {
+      return;
+    }
+
+    const selectedService = services.find((item) => item.value === selectedServiceId);
+    const duration = Number(selectedService?.durationMinutes ?? 0);
+    if (!Number.isFinite(duration) || duration <= 0) {
+      return;
+    }
+
+    const normalizedStartTime = normalizeTimeValue(selectedStartTime);
+    const computedEndTime = addMinutesToTime(normalizedStartTime, duration);
+    const currentEndTime = normalizeTimeValue(form.getValues("endTime"));
+
+    if (normalizedStartTime !== selectedStartTime) {
+      form.setValue("startTime", normalizedStartTime, { shouldValidate: true, shouldDirty: true });
+    }
+
+    if (currentEndTime !== computedEndTime) {
+      form.setValue("endTime", computedEndTime, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [form, selectedServiceId, selectedStartTime, services]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-130">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
@@ -160,7 +223,21 @@ export function AppointmentFormModal({
                     <select
                       className="border-input bg-transparent h-9 w-full rounded-md border px-3 text-sm"
                       value={field.value ? String(field.value) : ""}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const selectedId = Number(e.target.value);
+                        field.onChange(selectedId);
+
+                        const selectedService = services.find((item) => item.value === selectedId);
+                        const duration = Number(selectedService?.durationMinutes ?? 0);
+                        const startTime = normalizeTimeValue(form.getValues("startTime"));
+
+                        if (!startTime || !Number.isFinite(duration) || duration <= 0) {
+                          return;
+                        }
+
+                        const computedEndTime = addMinutesToTime(startTime, duration);
+                        form.setValue("endTime", computedEndTime, { shouldValidate: true, shouldDirty: true });
+                      }}
                       disabled={services.length === 0}
                     >
                       <option value="" disabled>Selecione um serviço</option>
@@ -215,7 +292,12 @@ export function AppointmentFormModal({
                   <FormItem>
                     <FormLabel>Fim</FormLabel>
                     <FormControl>
-                      <Input type="time" {...field} />
+                      <Input
+                        type="time"
+                        {...field}
+                        readOnly={Boolean(form.watch("serviceId"))}
+                        disabled={Boolean(form.watch("serviceId"))}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

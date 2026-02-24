@@ -42,8 +42,8 @@ export const HeaderComponents = () => {
         .toUpperCase()
     : "US";
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/login");
   };
 

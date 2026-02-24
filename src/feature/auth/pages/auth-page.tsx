@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom"
 export default function AuthPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false)
-  const { onLogin, loading, token } = AuthStore()
+  const { onLogin, loading, isAuthenticated } = AuthStore()
   const { fetchByUserId } = useEmpresaStore();
 
   const [email, setEmail] = useState("")
@@ -20,10 +20,10 @@ export default function AuthPage() {
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       navigate('/dashboard', { replace: true });
     }
-  }, [navigate, token]);
+  }, [isAuthenticated, navigate]);
 
   async function handleLogin() {
     if (email == "" || password == "") {
@@ -97,12 +97,6 @@ export default function AuthPage() {
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between">
-                <label className="text-sm font-medium">Senha</label>
-                <button className="text-sm text-primary hover:underline">
-                  Esqueceu a senha?
-                </button>
-              </div>
 
               <div className="relative">
                 <Input

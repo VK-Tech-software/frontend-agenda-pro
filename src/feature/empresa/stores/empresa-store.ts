@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { EmpresaService, type EmpresaDTO } from "../services/empresa-service";
 
 type EmpresaPayload = Omit<EmpresaDTO, "userId">;
@@ -17,7 +16,6 @@ interface EmpresaState {
 }
 
 export const useEmpresaStore = create<EmpresaState>()(
-    persist(
         (set) => ({
             company: null,
             companies: [],
@@ -85,25 +83,11 @@ export const useEmpresaStore = create<EmpresaState>()(
                     throw err;
                 }
             },
-        }),
-        {
-            name: "empresa-storage",
-            storage: createJSONStorage(() => sessionStorage),
-        }
-    )
+        })
 );
 
-// Migration: sanitize persisted `empresa-storage` if `company` was stored as an array
 try {
-    const key = "empresa-storage";
-    const raw = sessionStorage.getItem(key);
-    if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed?.state?.company && Array.isArray(parsed.state.company)) {
-            parsed.state.company = parsed.state.company.length ? parsed.state.company[0] : null;
-            sessionStorage.setItem(key, JSON.stringify(parsed));
-        }
-    }
-} catch (e) {
-    // ignore migration errors
+    sessionStorage.removeItem("empresa-storage");
+} catch {
+    // ignore storage cleanup errors
 }

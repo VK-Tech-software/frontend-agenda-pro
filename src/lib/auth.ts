@@ -1,7 +1,7 @@
 import { AuthStore } from "../feature/auth/stores/auth-store";
 
-export const getToken = () => {
-    return AuthStore.getState().token;
+export const isAuthenticated = () => {
+    return AuthStore.getState().isAuthenticated;
 };
 
 export const getUser = () => {
@@ -9,5 +9,5 @@ export const getUser = () => {
 };
 
 export const logout = () => {
-    AuthStore.getState().logout();
+    return AuthStore.getState().logout();
 };

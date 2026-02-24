@@ -11,8 +11,18 @@ export type RegisterPayload = {
 
 export class AuthService {
   static async login(payload: { email: string; password: string }) {
-    const response = await api.post("auth/login", payload)
-    return response.data
+    const { data } = await api.post("auth/login", payload)
+    return data
+  }
+
+  static async me() {
+    const { data } = await api.get("auth/me")
+    return data
+  }
+
+  static async logout() {
+    const { data } = await api.post("auth/logout")
+    return data
   }
 
   static async register(payload: RegisterPayload) {

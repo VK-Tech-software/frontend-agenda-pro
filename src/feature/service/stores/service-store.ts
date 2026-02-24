@@ -9,7 +9,7 @@ interface ServiceState {
   error: string | null;
   fetchByCompany: (companyId: number) => Promise<void>;
   fetchById: (id: number) => Promise<void>;
-  fetchAll: () => Promise<void>;
+  fetchAll: (companyId: number) => Promise<void>;
   createService: (payload: CreateServiceRequest) => Promise<void>;
   updateService: (id: number, payload: UpdateServiceRequest) => Promise<void>;
   deleteService: (id: number) => Promise<void>;
@@ -33,14 +33,9 @@ export const useServiceStore = create<ServiceState>()(
         }
       },
 
-      fetchAll: async () => {
+      fetchAll: async (companyId: number) => {
         set({ loading: true, error: null });
         try {
-          const storedEmpresa = sessionStorage.getItem("empresa-storage");
-          const empresaIdFromStorage = storedEmpresa
-            ? (JSON.parse(storedEmpresa)?.state?.company?.id as number | undefined)
-            : undefined;
-          const companyId = empresaIdFromStorage;
           if (!companyId) {
             set({ loading: false, error: "Empresa não encontrada" });
             return;

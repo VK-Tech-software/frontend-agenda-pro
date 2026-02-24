@@ -1,44 +1,34 @@
-# React + TypeScript + Vite
+# Frontend Agenda Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web em React + Vite para consumo da API Agenda Pro.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js 18+
+- pnpm 10+
 
-## React Compiler
+## Configuração
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Instale dependências:
+   - `pnpm install`
+2. Crie o arquivo de ambiente:
+   - copie `.env.example` para `.env`
+3. Use as variáveis padrão de desenvolvimento:
+   - `VITE_MS_API=/api`
+   - `VITE_API_TARGET=http://127.0.0.1:8080`
 
-## Expanding the ESLint configuration
+Essa configuração usa proxy do Vite para manter autenticação por cookie sem problemas de CORS no navegador.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Executar
 
-```js
-export default defineConfig([
-  # Frontend Agenda Pro
+- `pnpm dev`
+- App local: `http://localhost:5173`
 
-  Aplicação web em React + Vite para consumo da API Agenda Pro.
+## Build e lint
 
-  ## Requisitos
+- `pnpm lint`
+- `pnpm build`
 
-  - Node.js 18+
-  - pnpm (recomendado)
+## CI
 
-  ## Configuração
-
-  1. Instale dependências:
-     - `pnpm install`
-  2. Crie o arquivo de ambiente:
-     - copie `.env.example` para `.env`
-  3. Configure `VITE_MS_API` apontando para a API.
-
-  ## Executar
-
-  - `pnpm dev`
-
-  ## Build
-
-  - `pnpm build`
-```
+O workflow `frontend-ci.yml` executa lint e build em push/pull request.

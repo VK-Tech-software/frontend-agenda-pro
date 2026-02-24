@@ -12,6 +12,7 @@ import { useServiceStore } from "@/feature/service/stores/service-store";
 import { AuthStore } from "@/feature/auth/stores/auth-store";
 import { useSettingsStore } from "@/feature/config/store/settings-store";
 import { getSegmentLabels } from "@/shared/segments/segment-labels";
+import { useEmpresaStore } from "@/feature/empresa/stores/empresa-store";
 
 export const AppointmentPage = () => {
   const { appointments, loading, fetchByCompany, createAppointment, updateAppointment, deleteAppointment } = useAppointmentStore();
@@ -20,6 +21,7 @@ export const AppointmentPage = () => {
   const { professionals, fetchAll: fetchProfessionals } = useProfessionalStore();
   const { services, fetchAll: fetchServices } = useServiceStore();
   const { user } = AuthStore();
+  const { company, fetchByUserId } = useEmpresaStore();
   const { settings } = useSettingsStore();
   const labels = getSegmentLabels(settings?.segment);
 
@@ -46,12 +48,18 @@ export const AppointmentPage = () => {
   };
 
   useEffect(() => {
+    if (user?.id && !company?.id) {
+      fetchByUserId(user.id);
+    }
+  }, [company?.id, fetchByUserId, user?.id]);
+
+  useEffect(() => {
     fetchByCompany();
     fetchClients();
     fetchProfessionals();
-    fetchServices();
+    fetchServices(company?.id ?? 0);
     loadRequests();
-  }, [fetchByCompany, fetchClients, fetchProfessionals, fetchServices]);
+  }, [fetchByCompany, fetchClients, fetchProfessionals, fetchServices, company?.id]);
 
   const clientOptions = useMemo(
     () => clients.map((c) => ({ value: c.id ?? 0, label: c.name })),
@@ -62,7 +70,28 @@ export const AppointmentPage = () => {
     [professionals]
   );
   const serviceOptions = useMemo(
-    () => services.map((s) => ({ value: s.id ?? 0, label: s.name })),
+    () => services.map((s) => {
+      const rawService = s as unknown as Record<string, unknown>;
+      const rawDuration =
+        rawService.durationMinutes ??
+        rawService.duration_minutes ??
+        rawService.duracao_minutos ??
+        rawService["duração_minutos"] ??
+        rawService.duration;
+
+      const parsedDuration =
+        typeof rawDuration === "number"
+          ? rawDuration
+          : typeof rawDuration === "string"
+            ? Number.parseInt(rawDuration, 10)
+            : 0;
+
+      return {
+        value: s.id ?? 0,
+        label: s.name,
+        durationMinutes: Number.isFinite(parsedDuration) ? parsedDuration : 0,
+      };
+    }),
     [services]
   );
 
@@ -157,11 +186,11 @@ export const AppointmentPage = () => {
 
   const onSubmit = async (data: AppointmentFormValues) => {
     try {
-      const storedEmpresa = sessionStorage.getItem("empresa-storage");
-      const empresaIdFromStorage = storedEmpresa
-        ? (JSON.parse(storedEmpresa)?.state?.company?.id as number | undefined)
-        : undefined;
-      const companyId = empresaIdFromStorage ?? user?.empresaId ?? 0;
+      const companyId = company?.id ?? user?.empresaId ?? 0;
+      if (!companyId) {
+        showAlert({ title: "Erro", message: "Empresa não encontrada", type: "destructive" });
+        return;
+      }
 
       const startDate = toLocalDate(data.date, data.startTime);
       const endDate = toLocalDate(data.date, data.endTime);

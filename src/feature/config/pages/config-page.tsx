@@ -34,9 +34,7 @@ export const ConfigPage = () => {
         const loadSettings = async () => {
             try {
                 await fetchSettings();
-                const persisted = sessionStorage.getItem("auth-storage");
-                const persistedUserId = persisted ? (JSON.parse(persisted).state?.user?.id as number | undefined) : undefined;
-                const authUserId = AuthStore.getState().user?.id ?? persistedUserId;
+                const authUserId = AuthStore.getState().user?.id;
                 if (authUserId) await fetchCompanyInfo(authUserId);
             } catch (error) {
                 console.error(error);

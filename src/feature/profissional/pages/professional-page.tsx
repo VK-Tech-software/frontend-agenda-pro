@@ -24,6 +24,8 @@ import { ProfissionalFormPage, type ProfissionalForm } from "./components/profis
 import { ProfissionalListPage, type ProfissionalListItem } from "./components/profissional-list-page";
 import { useSettingsStore } from "@/feature/config/store/settings-store";
 import { getSegmentLabels } from "@/shared/segments/segment-labels";
+import { AuthStore } from "@/feature/auth/stores/auth-store";
+import { useEmpresaStore } from "@/feature/empresa/stores/empresa-store";
 
 export const ProfessionalPage = () => {
   const getApiMessage = (error: unknown): string | undefined => {
@@ -36,6 +38,8 @@ export const ProfessionalPage = () => {
     return undefined;
   };
   const { showAlert } = useAlert();
+  const { user } = AuthStore();
+  const { company, fetchByUserId } = useEmpresaStore();
   const { settings } = useSettingsStore();
   const labels = getSegmentLabels(settings?.segment);
 
@@ -54,16 +58,18 @@ export const ProfessionalPage = () => {
   const [formInitial, setFormInitial] = useState<ProfissionalForm | undefined>(undefined);
 
   useEffect(() => {
+    if (user?.id && !company?.id) {
+      fetchByUserId(user.id);
+    }
+  }, [company?.id, fetchByUserId, user?.id]);
+
+  useEffect(() => {
     fetchAll();
   }, [fetchAll]);
 
   const onSubmit = async (data: ProfissionalForm) => {
     try {
-      const storedEmpresa = sessionStorage.getItem("empresa-storage");
-      const empresaIdFromStorage = storedEmpresa
-        ? (JSON.parse(storedEmpresa)?.state?.company?.id as number | undefined)
-        : undefined;
-      const companyId = empresaIdFromStorage;
+      const companyId = company?.id;
       if (!companyId) {
         showAlert({ title: "Erro", message: "Empresa não encontrada", type: "destructive" });
         return;

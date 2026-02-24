@@ -1,11 +1,5 @@
-import { create, type StateCreator } from "zustand"
+import { create } from "zustand"
 import { AuthService } from "../services/auth-services";
-import {
-  persist,
-  createJSONStorage,
-  type PersistOptions,
-} from "zustand/middleware";
-
 
 export interface User {
   id: number;
@@ -17,48 +11,68 @@ export interface User {
 
 type AuthState = {
   user: User | null;
-  token: string | null;
+  isAuthenticated: boolean;
+  initialized: boolean;
   loading: boolean,
+  bootstrap: () => Promise<void>;
   onLogin: (email: string, password: string) => Promise<User>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  resetAuth: () => void;
 }
 
-type Persistence = (
-  config: StateCreator<AuthState>,
-  options: PersistOptions<AuthState>
-) => StateCreator<AuthState>;
-
-
 export const AuthStore = create<AuthState>()(
-  (persist as Persistence)(
-    (set): AuthState => ({
-      user: null,
-      token: null,
-      loading: false,
-      onLogin: async (email: string, password: string) => {
-        set({ loading: true })
-        try {
-          const res = await AuthService.login({ email, password })
+  (set): AuthState => ({
+    user: null,
+    isAuthenticated: false,
+    initialized: false,
+    loading: false,
+    bootstrap: async () => {
+      set({ loading: true });
+      try {
+        const data = await AuthService.me();
+        set({
+          user: data?.data?.user ?? null,
+          isAuthenticated: true,
+          initialized: true,
+          loading: false,
+        });
+      } catch {
+        set({
+          user: null,
+          isAuthenticated: false,
+          initialized: true,
+          loading: false,
+        });
+      }
+    },
+    onLogin: async (email: string, password: string) => {
+      set({ loading: true });
+      try {
+        const data = await AuthService.login({ email, password });
+        const user = data?.data?.user as User;
 
-          const { user, accessToken } = res.data
+        set({
+          user,
+          isAuthenticated: true,
+          initialized: true,
+          loading: false,
+        });
 
-          set({
-            user,
-            token: accessToken,
-            loading: false,
-          })
-
-          return user
-        } catch (error) {
-          set({ loading: false })
-          throw error
-        }
-      },
-      logout: () => {
-        set({ user: null, token: null });
-      },
-    }),
-    { name: "auth-storage", storage: createJSONStorage(() => sessionStorage) }
-  )
-
+        return user;
+      } catch (error) {
+        set({ loading: false });
+        throw error;
+      }
+    },
+    logout: async () => {
+      try {
+        await AuthService.logout();
+      } finally {
+        set({ user: null, isAuthenticated: false, initialized: true, loading: false });
+      }
+    },
+    resetAuth: () => {
+      set({ user: null, isAuthenticated: false, initialized: true, loading: false });
+    },
+  })
 )

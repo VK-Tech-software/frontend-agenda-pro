@@ -9,9 +9,13 @@ import { ServiceFormPage, type ServiceForm } from "./components/service-form-pag
 import { ServiceListPage, type ServiceListItem } from "./components/service-list-page";
 import { useSettingsStore } from "@/feature/config/store/settings-store";
 import { getSegmentLabels } from "@/shared/segments/segment-labels";
+import { AuthStore } from "@/feature/auth/stores/auth-store";
+import { useEmpresaStore } from "@/feature/empresa/stores/empresa-store";
 
 export const ServicePage = () => {
   const { services, loading, fetchAll, createService, updateService, deleteService } = useServiceStore();
+  const { user } = AuthStore();
+  const { company, fetchByUserId } = useEmpresaStore();
   const { showAlert } = useAlert();
   const { settings } = useSettingsStore();
   const labels = getSegmentLabels(settings?.segment);
@@ -20,7 +24,16 @@ export const ServicePage = () => {
   const [search, setSearch] = useState("");
   const [formInitial, setFormInitial] = useState<ServiceForm | undefined>(undefined);
 
-  useEffect(() => { fetchAll() }, [fetchAll]);
+  useEffect(() => {
+    if (user?.id && !company?.id) {
+      fetchByUserId(user.id);
+    }
+  }, [company?.id, fetchByUserId, user?.id]);
+
+  useEffect(() => {
+    if (!company?.id) return;
+    fetchAll(company.id);
+  }, [company?.id, fetchAll]);
 
 
   const handleEdit = (s: ServiceListItem) => {
@@ -41,11 +54,7 @@ export const ServicePage = () => {
   };
 
   const handleFormSubmit = async (data: ServiceForm) => {
-    const storedEmpresa = sessionStorage.getItem("empresa-storage");
-    const empresaIdFromStorage = storedEmpresa
-      ? (JSON.parse(storedEmpresa)?.state?.company?.id as number | undefined)
-      : undefined;
-    const companyId = empresaIdFromStorage;
+    const companyId = company?.id;
     if (!companyId) {
       showAlert({ title: "Erro", message: "Empresa não encontrada", type: "destructive" });
       return;

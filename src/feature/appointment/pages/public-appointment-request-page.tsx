@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { startOfMonth, endOfMonth, startOfWeek, addDays, isSameMonth, isSameDay, subMonths, addMonths, format, parseISO } from "date-fns";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAlert } from "@/hooks/use-alert";
 
 import { AppointmentRequestService } from "../services/appointment-request-service";
 import { PublicAvailabilityService, type PublicCompanyInfo, type PublicCompanyItem } from "../services/public-availability-service";
@@ -16,6 +18,8 @@ import TimeSlotsSection from "./components/public/card-timeslots-section-page";
 import SummaryCard from "./components/public/card-summary-page";
 
 export const PublicAppointmentRequestPage = () => {
+  const [searchParams] = useSearchParams();
+  const { showAlert } = useAlert();
   const [loading, setLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -26,6 +30,7 @@ export const PublicAppointmentRequestPage = () => {
   const [availabilityCache, setAvailabilityCache] = useState<Record<string, string[]>>({});
   const inflightDates = useRef<Set<string>>(new Set());
   const [slotsLoading, setSlotsLoading] = useState(false);
+  const [companyLoading, setCompanyLoading] = useState(false);
 
   const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
 
@@ -64,12 +69,47 @@ export const PublicAppointmentRequestPage = () => {
     fetchCompanies();
   }, []);
 
+  useEffect(() => {
+    const companyFromQuery = searchParams.get("company") ?? searchParams.get("companyId");
+    if (!companyFromQuery) return;
+
+    const parsedCompanyId = Number(companyFromQuery);
+    if (!Number.isInteger(parsedCompanyId) || parsedCompanyId <= 0) return;
+
+    setForm((prev) => {
+      if (prev.companyId === String(parsedCompanyId)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        companyId: String(parsedCompanyId),
+        serviceId: "",
+        professionalId: "",
+        preferredDate: "",
+        preferredTime: "",
+      };
+    });
+
+    setAvailabilityCache({});
+    setAvailableSlots([]);
+    void loadCompany(parsedCompanyId);
+  }, [searchParams]);
+
   const loadCompany = async (id: number) => {
+    setCompanyLoading(true);
     try {
       const info = await PublicAvailabilityService.getCompanyInfo(id);
       setCompanyInfo(info);
     } catch {
       setCompanyInfo(null);
+      showAlert({
+        title: "Empresa não encontrada",
+        message: "Não foi possível carregar a empresa selecionada pelo link.",
+        type: "destructive",
+      });
+    } finally {
+      setCompanyLoading(false);
     }
   };
 
@@ -93,6 +133,11 @@ export const PublicAppointmentRequestPage = () => {
       setAvailableSlots(slots);
       setAvailabilityCache((prev) => ({ ...prev, [date]: slots }));
     } catch {
+      showAlert({
+        title: "Erro ao carregar horários",
+        message: "Não foi possível consultar os horários disponíveis. Tente novamente.",
+        type: "destructive",
+      });
       setAvailableSlots([]);
     } finally {
       inflightDates.current.delete(date);
@@ -182,7 +227,11 @@ export const PublicAppointmentRequestPage = () => {
 
       setSuccessOpen(true);
     } catch {
-      alert("Erro ao enviar solicitação.");
+      showAlert({
+        title: "Erro ao enviar solicitação",
+        message: "Não foi possível enviar seu pedido agora. Tente novamente.",
+        type: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -221,6 +270,10 @@ export const PublicAppointmentRequestPage = () => {
                       loadCompany(Number(id));
                     }}
                   />
+                )}
+
+                {companyLoading && (
+                  <div className="text-sm text-muted-foreground">Carregando dados da empresa...</div>
                 )}
 
                 {companyInfo && (

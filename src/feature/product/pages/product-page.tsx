@@ -7,9 +7,13 @@ import { useProductStore } from "../stores/product-store";
 import { useAlert } from "@/hooks/use-alert";
 import { ProductListPage, type ProductListItem } from "./components/product-list-page";
 import { ProductFormPage, type ProductForm } from "./components/product-form-page";
+import { AuthStore } from "@/feature/auth/stores/auth-store";
+import { useEmpresaStore } from "@/feature/empresa/stores/empresa-store";
 
 export const ProductPage = () => {
   const { products, loading, fetchAll, createProduct, updateProduct, deleteProduct } = useProductStore();
+  const { user } = AuthStore();
+  const { company, fetchByUserId } = useEmpresaStore();
   const { showAlert } = useAlert();
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +21,12 @@ export const ProductPage = () => {
   const [formInitial, setFormInitial] = useState<ProductForm | undefined>(undefined);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  useEffect(() => {
+    if (user?.id && !company?.id) {
+      fetchByUserId(user.id);
+    }
+  }, [company?.id, fetchByUserId, user?.id]);
 
   const handleEdit = (p: ProductListItem) => {
     setEditingId(p.id);
@@ -30,11 +40,11 @@ export const ProductPage = () => {
   };
   const handleFormSubmit = async (data: ProductForm) => {
     try {
-      const storedEmpresa = sessionStorage.getItem("empresa-storage");
-      const empresaIdFromStorage = storedEmpresa
-        ? (JSON.parse(storedEmpresa)?.state?.company?.id as number | undefined)
-        : undefined;
-      const companyId = empresaIdFromStorage; 
+      const companyId = company?.id;
+      if (!companyId) {
+        showAlert({ title: "Erro", message: "Empresa não encontrada", type: "destructive" });
+        return;
+      }
       const payload = { name: data.name, description: data.description, price: data.price ? Number(data.price) : undefined, quantity: data.quantity ? Number(data.quantity) : undefined, companyId: companyId };
       if (editingId) {
         await updateProduct(editingId, payload);

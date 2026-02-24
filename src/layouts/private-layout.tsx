@@ -9,10 +9,23 @@ import { BillingService } from "@/feature/billing/services/billing-service"
 export const PrivateLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { token, logout, user } = AuthStore();
+  const { isAuthenticated, initialized, bootstrap, logout, user } = AuthStore();
 
   useEffect(() => {
-    if (!token) return;
+    if (!initialized) {
+      bootstrap();
+    }
+  }, [bootstrap, initialized]);
+
+  useEffect(() => {
+    if (!initialized) return;
+    if (!isAuthenticated) {
+      navigate('/login', { replace: true });
+    }
+  }, [initialized, isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     const idleTimeMs = 5 * 60 * 1000;
     let timeoutId: number | undefined;
 
@@ -39,10 +52,10 @@ export const PrivateLayout = () => {
       if (timeoutId) window.clearTimeout(timeoutId);
       events.forEach((event) => window.removeEventListener(event, resetTimer));
     };
-  }, [logout, navigate, token]);
+  }, [isAuthenticated, logout, navigate]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     if (user?.tipoConta?.toLowerCase() === "admin") return;
     if (location.pathname === "/planos") return;
 
@@ -90,7 +103,11 @@ export const PrivateLayout = () => {
     }
 
     checkPlan();
-  }, [location.pathname, location.search, navigate, token, user?.tipoConta]);
+  }, [isAuthenticated, location.pathname, location.search, navigate, user?.tipoConta]);
+
+  if (!initialized) {
+    return null;
+  }
 
 
   return (
