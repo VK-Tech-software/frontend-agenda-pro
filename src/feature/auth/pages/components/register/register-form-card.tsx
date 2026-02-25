@@ -8,6 +8,8 @@ import {
     FileDigit,
     Briefcase,
     Loader2,
+    Calendar,
+    ShieldCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -58,9 +60,21 @@ export const RegisterFormCard = ({
     });
 
     return (
-        <Card className="w-full max-w-md border-none shadow-none">
-            <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold">Crie sua conta</CardTitle>
+        <Card className="w-full max-w-md border-slate-200/80 shadow-xl shadow-slate-200/60">
+            <CardHeader className="space-y-3 pb-4">
+                <div className="flex items-center justify-between">
+                    <div className="inline-flex items-center gap-2">
+                        <div className="bg-primary p-2 rounded-lg text-primary-foreground">
+                            <Calendar className="h-4 w-4" />
+                        </div>
+                        <span className="text-base font-semibold">AgendaPro</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-600">
+                        <ShieldCheck className="h-3 w-3" />
+                        Verificado
+                    </span>
+                </div>
+                <CardTitle className="text-2xl font-bold tracking-tight">Crie sua conta</CardTitle>
                 <CardDescription>
                     Preencha os dados para começar a usar o AgendaPro
                 </CardDescription>
@@ -81,7 +95,7 @@ export const RegisterFormCard = ({
                                     <FormControl>
                                         <div className="relative">
                                             <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                            <Input className="pl-10" {...field} />
+                                            <Input className="pl-10 h-11" {...field} />
                                         </div>
                                     </FormControl>
                                     <FormMessage />
@@ -100,7 +114,7 @@ export const RegisterFormCard = ({
                                             <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                             <Input
                                                 type="email"
-                                                className="pl-10"
+                                                className="pl-10 h-11"
                                                 placeholder="seu@email.com"
                                                 {...field}
                                             />
@@ -122,7 +136,7 @@ export const RegisterFormCard = ({
                                             <div className="relative">
                                                 <FileDigit className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                                 <Input
-                                                    className="pl-10"
+                                                    className="pl-10 h-11"
                                                     placeholder="Somente números"
                                                     {...field}
                                                 />
@@ -142,7 +156,7 @@ export const RegisterFormCard = ({
                                         <FormControl>
                                             <div className="relative">
                                                 <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                                <Input className="pl-10" {...field} />
+                                                <Input className="pl-10 h-11" {...field} />
                                             </div>
                                         </FormControl>
                                         <FormMessage />
@@ -162,7 +176,7 @@ export const RegisterFormCard = ({
                                             <Briefcase className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground z-10" />
                                             <select
                                                 {...field}
-                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pl-10"
+                                                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pl-10"
                                             >
                                                 <option value="profissional">Profissional</option>
                                             </select>
@@ -185,7 +199,7 @@ export const RegisterFormCard = ({
                                                 <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                                 <Input
                                                     type="password"
-                                                    className="pl-10"
+                                                    className="pl-10 h-11"
                                                     {...field}
                                                 />
                                             </div>
@@ -206,7 +220,7 @@ export const RegisterFormCard = ({
                                                 <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                                 <Input
                                                     type="password"
-                                                    className="pl-10"
+                                                    className="pl-10 h-11"
                                                     {...field}
                                                 />
                                             </div>
@@ -219,7 +233,7 @@ export const RegisterFormCard = ({
 
                         <Button
                             type="submit"
-                            className="w-full bg-emerald-500 hover:bg-emerald-600"
+                            className="w-full h-11 bg-emerald-500 hover:bg-emerald-600"
                             disabled={isLoading}
                         >
                             {isLoading && (

@@ -1,4 +1,4 @@
-import { Bell, Search, LogOut } from "lucide-react";
+import { Bell, Search, LogOut, ShieldCheck } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { menuItens } from "../shared/navigation/menu";
 import { Input } from "./ui/input";
@@ -68,14 +68,15 @@ export const HeaderComponents = () => {
   const notificationsList = useMemo(() => notifications ?? [], [notifications]);
 
   return (
-    <header className="border-b bg-white px-4 py-2 sm:px-6 sm:py-3 flex items-center justify-between gap-3">
+    <header className="border-b border-slate-200/80 bg-white/95 backdrop-blur px-4 py-3 sm:px-6 flex items-center justify-between gap-3 shadow-sm">
       <div className="flex items-start gap-3">
         <SidebarTrigger className="md:hidden" />
         <div>
-          <h1 className="text-base sm:text-lg font-semibold">
+          <h1 className="text-base sm:text-lg font-semibold tracking-tight">
             {currentRoute?.label ?? "Dashboard"}
           </h1>
-          <span className="text-xs sm:text-sm text-slate-500">
+          <span className="text-xs sm:text-sm text-slate-500 inline-flex items-center gap-1">
+            <ShieldCheck className="h-3 w-3" />
             Gestão inteligente do seu negócio
           </span>
         </div>
@@ -86,7 +87,7 @@ export const HeaderComponents = () => {
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Buscar..."
-            className="pl-9 w-56"
+            className="pl-9 w-56 h-10"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -111,7 +112,7 @@ export const HeaderComponents = () => {
 
         <Dialog open={notificationOpen} onOpenChange={setNotificationOpen}>
           <DialogTrigger asChild>
-            <button className="relative h-9 w-9 flex items-center justify-center rounded-xl hover:bg-slate-100 transition">
+            <button className="relative h-10 w-10 flex items-center justify-center rounded-xl hover:bg-slate-100 transition border border-transparent hover:border-slate-200">
               <Bell size={18} />
               {notificationsList.length > 0 && (
                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
@@ -145,17 +146,17 @@ export const HeaderComponents = () => {
           <span className="text-xs text-slate-500">{user?.email ?? ""}</span>
         </div>
 
-        <Avatar className="h-9 w-9">
+        <Avatar className="h-10 w-10 ring-2 ring-slate-100">
           <AvatarFallback className="bg-sky-500 text-white">
             {initials}
           </AvatarFallback>
         </Avatar>
 
-        <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 hidden sm:inline-flex">
+        <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 hidden sm:inline-flex h-10 border-slate-200">
           <LogOut className="h-4 w-4" />
           Sair
         </Button>
-        <Button variant="outline" size="icon" onClick={handleLogout} className="sm:hidden">
+        <Button variant="outline" size="icon" onClick={handleLogout} className="sm:hidden h-10 w-10 border-slate-200">
           <LogOut className="h-4 w-4" />
         </Button>
       </div>

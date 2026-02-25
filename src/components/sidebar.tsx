@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Calendar } from "lucide-react";
+import { Calendar, ShieldCheck } from "lucide-react";
 import { cn } from "../lib/utils";
 import { menuItens } from "../shared/navigation/menu";
 import { AuthStore } from "@/feature/auth/stores/auth-store";
@@ -39,12 +39,18 @@ export const SideBarComponents = () => {
 
 
   return (
-    <Sidebar className="bg-white border-r">
-      <div className="h-19 flex items-center gap-3 px-6 border-b">
-        <div className="h-10 w-10 rounded-xl bg-sky-500 flex items-center justify-center text-white">
+    <Sidebar className="bg-white border-r border-slate-200/80">
+      <div className="h-20 flex items-center justify-between px-5 border-b border-slate-200/80">
+        <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground">
           <Calendar size={20} />
         </div>
-        <span className="font-semibold text-lg">{brandName}</span>
+        <span className="font-semibold text-lg tracking-tight">{brandName}</span>
+        </div>
+        <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-1 text-[11px] text-slate-600">
+          <ShieldCheck className="h-3 w-3" />
+          Pro
+        </span>
       </div>
 
       <SidebarContent className="px-3 py-4">
@@ -58,10 +64,10 @@ export const SideBarComponents = () => {
                 to={item.path}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition",
+                    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition border border-transparent",
                     isActive
-                      ? "bg-sky-50 text-sky-600"
-                      : "text-slate-600 hover:bg-slate-100"
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                      : "text-slate-600 hover:bg-slate-100 hover:border-slate-200"
                   )
                 }
               >

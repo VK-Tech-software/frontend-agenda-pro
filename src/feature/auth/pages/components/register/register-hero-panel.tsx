@@ -1,11 +1,11 @@
-import { Briefcase } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export const RegisterHeroPanel = () => {
     return (
-        <div className="hidden lg:flex flex-col items-center justify-center bg-[#0f1e4a] text-white px-10">
+        <div className="hidden lg:flex flex-col items-center justify-center bg-slate-950 text-white px-10">
             <div className="max-w-md text-center space-y-4">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-white/10">
-                    <Briefcase className="h-6 w-6" />
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
+                    <Sparkles className="h-6 w-6" />
                 </div>
 
                 <h2 className="text-3xl font-bold">

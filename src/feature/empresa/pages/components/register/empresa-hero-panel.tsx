@@ -1,9 +1,11 @@
+import { Sparkles } from "lucide-react";
+
 export const EmpresaHeroPanel = () => {
   return (
-    <aside className="hidden lg:flex flex-col justify-center bg-blue-950 from-slate-900 to-slate-800 text-white px-16">
+    <aside className="hidden lg:flex flex-col justify-center bg-slate-950 text-white px-16">
       <div className="max-w-md">
-        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
-          📅
+        <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
+          <Sparkles className="h-6 w-6" />
         </div>
 
         <h1 className="text-3xl font-bold mb-4">

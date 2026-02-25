@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Calendar } from "lucide-react"
+import { Eye, EyeOff, Calendar, Sparkles, ShieldCheck } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Button } from "../../../components/ui/button"
 import { Input } from "../../../components/ui/input"
@@ -39,10 +39,7 @@ export default function AuthPage() {
 
       const user = AuthStore.getState().user
 
-      console.log('user', user);
       const company = await fetchByUserId(user!.id)
-
-      console.log('company', company);
 
       if (company) {
         navigate('/dashboard', { replace: true })
@@ -53,7 +50,7 @@ export default function AuthPage() {
 
     } catch (error) {
       showAlert({
-        title: "Falha na autenticação" + error,
+        title: "Falha na autenticação",
         message: "Erro ao autenticar.",
         type: "destructive",
       });
@@ -66,81 +63,90 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-slate-50">
 
       {/* LEFT */}
-      <div className="flex items-center justify-center p-8">
-        <div className="w-full max-w-md space-y-6">
-
-          <div className="flex items-center gap-2">
-            <div className="bg-primary p-2 rounded-lg text-primary-foreground">
-              <Calendar size={20} />
-            </div>
-            <span className="text-xl font-semibold">AgendaPro</span>
-          </div>
-
-          <div>
-            <h1 className="text-2xl font-bold">Bem-vindo de volta!</h1>
-            <p className="text-sm text-muted-foreground">
-              Entre na sua conta para continuar
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Email</label>
-              <Input
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-1">
-
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+      <div className="flex items-center justify-center p-6 md:p-10">
+        <Card className="w-full max-w-md border-slate-200/80 shadow-xl shadow-slate-200/60">
+          <CardContent className="p-8 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="bg-primary p-2 rounded-lg text-primary-foreground">
+                  <Calendar size={20} />
+                </div>
+                <span className="text-xl font-semibold">AgendaPro</span>
               </div>
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-600">
+                <ShieldCheck size={12} />
+                Seguro
+              </span>
             </div>
 
-            <Button className="w-full" onClick={handleLogin} disabled={loading}>
-              {loading ? "Entrando..." : "Entrar"}
-            </Button>
-          </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Bem-vindo de volta!</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Entre na sua conta para continuar
+              </p>
+            </div>
 
-          <Separator className="my-6" />
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  placeholder="seu@email.com"
+                  className="h-11"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
 
-          <p className="text-center text-sm">
-            Não tem uma conta?{" "}
-            <Button onClick={onRegister} variant="link">
-              Registre-se grátis
-            </Button>
-          </p>
-        </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Senha</label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    className="h-11 pr-10"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <Button className="w-full h-11" onClick={handleLogin} disabled={loading}>
+                {loading ? "Entrando..." : "Entrar"}
+              </Button>
+            </div>
+
+            <Separator className="my-6" />
+
+            <p className="text-center text-sm text-muted-foreground">
+              Não tem uma conta?{" "}
+              <Button onClick={onRegister} variant="link" className="px-1 text-emerald-600">
+                Registre-se grátis
+              </Button>
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* RIGHT */}
-      <div className="hidden lg:flex items-center justify-center bg-blue-950 text-white p-12">
-        <Card className="bg-transparent border-none shadow-none text-center space-y-6">
+      <div className="hidden lg:flex items-center justify-center bg-slate-950 text-white p-12">
+        <Card className="bg-transparent border-none shadow-none text-center space-y-6 max-w-lg">
           <CardContent className="space-y-6 justify-center items-center flex-col">
-            <div className="mx-auto bg-white/10 p-4 rounded-xl w-fit">
-              <Calendar size={32} />
+            <div className="mx-auto bg-white/10 p-4 rounded-2xl w-fit">
+              <Sparkles size={28} />
             </div>
 
             <h2 className="text-3xl font-bold text-white">
-              Gerencie seus agendamentos com facilidade
+              Gestão inteligente para seu negócio
             </h2>
 
             <p className="text-slate-300 text-center">

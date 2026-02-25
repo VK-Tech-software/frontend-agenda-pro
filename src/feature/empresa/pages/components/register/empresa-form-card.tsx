@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Calendar, ShieldCheck } from "lucide-react";
 import type { EmpresaDTO } from "@/feature/empresa/services/empresa-service";
 
 type EmpresaFormData = Omit<EmpresaDTO, "userId">;
@@ -22,14 +23,23 @@ export const EmpresaFormCard = ({
   onChange,
 }: EmpresaFormCardProps) => {
   return (
-    <Card className="w-full max-w-md border-none shadow-none">
-      <CardContent className="p-0">
+    <Card className="w-full max-w-md border-slate-200/80 shadow-xl shadow-slate-200/60">
+      <CardContent className="p-8">
         <header className="mb-8 text-center">
-          <div className="flex justify-center items-center gap-2 mb-4 text-xl font-semibold">
-            📅 AgendaPro
+          <div className="flex items-center justify-between mb-4">
+            <div className="inline-flex items-center gap-2 text-xl font-semibold">
+              <div className="bg-primary p-2 rounded-lg text-primary-foreground">
+                <Calendar className="h-4 w-4" />
+              </div>
+              AgendaPro
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-600">
+              <ShieldCheck className="h-3 w-3" />
+              Seguro
+            </span>
           </div>
 
-          <h2 className="text-2xl font-bold">Crie sua conta</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Crie sua conta</h2>
           <p className="text-sm text-muted-foreground">Comece sua conta agora</p>
         </header>
 
@@ -38,6 +48,7 @@ export const EmpresaFormCard = ({
             <Label>Nome da empresa</Label>
             <Input
               placeholder="Salão Beleza Total"
+              className="h-11"
               value={formData.name}
               onChange={(event) => onChange("name", event.target.value)}
             />
@@ -47,6 +58,7 @@ export const EmpresaFormCard = ({
             <Label>CPF / CNPJ</Label>
             <Input
               placeholder="Somente números"
+              className="h-11"
               value={formData.cnpj}
               onChange={(event) => onChange("cnpj", event.target.value)}
             />
@@ -59,6 +71,7 @@ export const EmpresaFormCard = ({
             <Label>Endereço</Label>
             <Input
               placeholder="Rua das Flores, 123"
+              className="h-11"
               value={formData.address}
               onChange={(event) => onChange("address", event.target.value)}
             />
@@ -69,6 +82,7 @@ export const EmpresaFormCard = ({
               <Label>Cidade</Label>
               <Input
                 placeholder="São Paulo"
+                className="h-11"
                 value={formData.city}
                 onChange={(event) => onChange("city", event.target.value)}
               />
@@ -77,13 +91,14 @@ export const EmpresaFormCard = ({
               <Label>Estado</Label>
               <Input
                 placeholder="SP"
+                className="h-11"
                 value={formData.state}
                 onChange={(event) => onChange("state", event.target.value)}
               />
             </div>
           </div>
 
-          <Button className="w-full bg-blue-950 hover:bg-blue-800" disabled={loading}>
+          <Button className="w-full h-11 bg-emerald-500 hover:bg-emerald-600" disabled={loading}>
             {loading ? "Criando..." : "Criar conta"}
           </Button>
         </form>

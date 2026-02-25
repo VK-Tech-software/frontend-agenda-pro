@@ -43,9 +43,9 @@ export const ConfirmedCodeEmail = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Confirme seu email</DialogTitle>
+                    <DialogTitle className="text-xl">Confirme seu email</DialogTitle>
                     <DialogDescription>
                         Digite o código enviado para {email} para ativar sua conta.
                     </DialogDescription>
@@ -56,6 +56,7 @@ export const ConfirmedCodeEmail = ({
                         placeholder="000000"
                         inputMode="numeric"
                         maxLength={6}
+                        className="h-11 text-center text-lg tracking-[0.3em]"
                         value={code}
                         onChange={(event) => {
                             const digitsOnly = event.target.value.replace(/\D/g, "");
@@ -67,7 +68,7 @@ export const ConfirmedCodeEmail = ({
 
                     <Button
                         type="button"
-                        className="w-full bg-emerald-500 hover:bg-emerald-600"
+                        className="w-full h-11 bg-emerald-500 hover:bg-emerald-600"
                         onClick={handleConfirm}
                         disabled={loading}
                     >
