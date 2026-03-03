@@ -72,8 +72,6 @@ export const ConfigPage = () => {
     }
   };
 
-  const activeTabData = TABS.find((t) => t.id === activeTab)!;
-
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8 space-y-5">
       {/* Page Header */}

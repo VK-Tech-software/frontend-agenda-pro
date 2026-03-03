@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { ClientService, type ClientDTO, type CreateClientRequest, type UpdateClientRequest } from "../services/client-service";
 
 interface ClientState {
@@ -15,7 +14,6 @@ interface ClientState {
 }
 
 export const useClientStore = create<ClientState>()(
-  persist(
     (set) => ({
       clients: [],
       selected: null,
@@ -46,7 +44,6 @@ export const useClientStore = create<ClientState>()(
         set({ loading: true, error: null });
         try {
           const created = await ClientService.create(payload);
-          // Se backend retorna boolean, força reload da listagem
           if (typeof created === "boolean") {
             await ClientService.getAll().then((data) => set({ clients: data, loading: false }));
           } else {
@@ -80,6 +77,4 @@ export const useClientStore = create<ClientState>()(
         }
       },
     }),
-    { name: "client-storage", storage: createJSONStorage(() => sessionStorage) }
-  )
 );

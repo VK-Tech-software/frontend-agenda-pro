@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { ProfessionalService, type ProfessionalDTO, type CreateProfessionalRequest, type UpdateProfessionalRequest } from "../services/professional-service";
 
 interface ProfessionalState {
@@ -7,7 +6,7 @@ interface ProfessionalState {
   selectedProfessional: ProfessionalDTO | null;
   loading: boolean;
   error: string | null;
-  
+
   fetchAll: () => Promise<void>;
   fetchById: (id: number) => Promise<void>;
   createProfessional: (payload: CreateProfessionalRequest) => Promise<void>;
@@ -17,7 +16,6 @@ interface ProfessionalState {
 }
 
 export const useProfessionalStore = create<ProfessionalState>()(
-  persist(
     (set) => ({
       professionals: [],
       selectedProfessional: null,
@@ -55,11 +53,8 @@ export const useProfessionalStore = create<ProfessionalState>()(
       createProfessional: async (payload: CreateProfessionalRequest) => {
         set({ loading: true, error: null });
         try {
-          const newProfessional = await ProfessionalService.create(payload);
-          set((state) => ({
-            professionals: [...state.professionals, newProfessional],
-            loading: false,
-          }));
+          await ProfessionalService.create(payload);
+          await ProfessionalService.getAll().then((data) => set({ professionals: data, loading: false }));
         } catch (err: any) {
           const apiMessage = err?.response?.data?.data?.message ?? err?.response?.data?.message;
           set({
@@ -110,9 +105,4 @@ export const useProfessionalStore = create<ProfessionalState>()(
 
       clearError: () => set({ error: null }),
     }),
-    {
-      name: "professional-storage",
-      storage: createJSONStorage(() => sessionStorage),
-    }
-  )
 );

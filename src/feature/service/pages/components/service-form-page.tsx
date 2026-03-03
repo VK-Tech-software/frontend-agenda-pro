@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { useEffect, useState } from "react";
 
 const serviceSchema = z.object({
 	name: z.string().min(2, "Nome inválido"),
@@ -14,6 +13,7 @@ const serviceSchema = z.object({
 });
 
 export type ServiceForm = z.infer<typeof serviceSchema>;
+type ServiceFormInput = z.input<typeof serviceSchema>;
 
 interface ServiceFormPageProps {
 	initialValues?: Partial<ServiceForm>;
@@ -23,14 +23,10 @@ interface ServiceFormPageProps {
 }
 
 export function ServiceFormPage({ initialValues, onSubmit, loading, onCancel }: ServiceFormPageProps) {
-	const form = useForm<ServiceForm>({
+	const form = useForm<ServiceFormInput, unknown, ServiceForm>({
 		resolver: zodResolver(serviceSchema),
-		defaultValues: initialValues || { name: "", description: "", price: 0, durationMinutes: 30, products: [] },
+		defaultValues: initialValues || { name: "", description: "", price: 0, durationMinutes: 30 },
 	});
-
-	useEffect(() => {
-		// no-op: products selection removed
-	}, []);
 
 	return (
 		<Form {...form}>
@@ -69,7 +65,18 @@ export function ServiceFormPage({ initialValues, onSubmit, loading, onCancel }: 
 						<FormItem>
 							<FormLabel>Preço</FormLabel>
 							<FormControl>
-								<Input {...field} type="number" min={0} step={0.01} placeholder="Preço" />
+								<Input
+									name={field.name}
+									ref={field.ref}
+									onBlur={field.onBlur}
+									disabled={field.disabled}
+									type="number"
+									min={0}
+									step={0.01}
+									placeholder="Preço"
+									value={typeof field.value === "number" ? field.value : ""}
+									onChange={(event) => field.onChange(event.target.value)}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -82,7 +89,18 @@ export function ServiceFormPage({ initialValues, onSubmit, loading, onCancel }: 
 						<FormItem>
 							<FormLabel>Duração (minutos)</FormLabel>
 							<FormControl>
-								<Input {...field} type="number" min={1} step={1} placeholder="Duração" />
+								<Input
+									name={field.name}
+									ref={field.ref}
+									onBlur={field.onBlur}
+									disabled={field.disabled}
+									type="number"
+									min={1}
+									step={1}
+									placeholder="Duração"
+									value={typeof field.value === "number" ? field.value : ""}
+									onChange={(event) => field.onChange(event.target.value)}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>

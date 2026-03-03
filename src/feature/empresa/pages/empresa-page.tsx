@@ -30,7 +30,7 @@ export const EmpresaPage = () => {
       if (!user?.id) return;
       const company = await fetchByUserId(user.id);
       if (company?.active) {
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }
     };
     loadCompany();
@@ -58,7 +58,7 @@ export const EmpresaPage = () => {
         message: "Faça login novamente para cadastrar sua empresa.",
         type: "destructive"
       });
-      navigate("/login");
+      navigate("/login", { replace: true });
       return;
     }
     try {
@@ -68,7 +68,7 @@ export const EmpresaPage = () => {
         message: "Empresa cadastrada com sucesso!",
         type: "success"
       });
-      navigate("/planos");
+      navigate("/planos", { replace: true });
     } catch (error: any) {
       showAlert({
         title: "Erro",

@@ -45,8 +45,8 @@ export const useStockStore = create<StockState>()(
       createStock: async (payload: CreateStockRequest) => {
         set({ loading: true, error: null });
         try {
-          const created = await StockService.create(payload);
-          set((state) => ({ stocks: [...state.stocks, created], loading: false }));
+          await StockService.create(payload);
+          await StockService.getByCompany(payload.companyId).then((data) => set({ stocks: data, loading: false }));
         } catch (err: any) {
           set({ loading: false, error: err?.response?.data?.message ?? "Erro ao criar item de estoque" });
           throw err;

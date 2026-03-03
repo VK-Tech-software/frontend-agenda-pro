@@ -42,8 +42,8 @@ export const useProductStore = create<ProductState>()((set) => ({
   createProduct: async (payload: CreateProductRequest) => {
     set({ loading: true, error: null });
     try {
-      const created = await ProductService.create(payload);
-      set((state) => ({ products: [...state.products, created], loading: false }));
+      await ProductService.create(payload);
+      await ProductService.getAll().then((data) => set({ products: data, loading: false }));
     } catch {
       set({ loading: false, error: "Erro ao criar produto" });
     }

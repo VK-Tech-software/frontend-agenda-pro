@@ -60,8 +60,8 @@ export const useServiceStore = create<ServiceState>()(
       createService: async (payload: CreateServiceRequest) => {
         set({ loading: true, error: null });
         try {
-          const created = await ServiceService.create(payload);
-          set((state) => ({ services: [...state.services, created], loading: false }));
+          await ServiceService.create(payload);
+          await ServiceService.getAll(payload.companyId).then((data) => set({ services: data, loading: false }));
         } catch {
           set({ loading: false, error: "Erro ao criar serviço" });
         }
