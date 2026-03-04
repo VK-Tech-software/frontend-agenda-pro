@@ -74,7 +74,7 @@ export function ServiceFormPage({ initialValues, onSubmit, loading, onCancel }: 
 									min={0}
 									step={0.01}
 									placeholder="Preço"
-									value={typeof field.value === "number" ? field.value : ""}
+									value={typeof field.value === "number" || typeof field.value === "string" ? field.value : ""}
 									onChange={(event) => field.onChange(event.target.value)}
 								/>
 							</FormControl>
@@ -98,7 +98,7 @@ export function ServiceFormPage({ initialValues, onSubmit, loading, onCancel }: 
 									min={1}
 									step={1}
 									placeholder="Duração"
-									value={typeof field.value === "number" ? field.value : ""}
+									value={typeof field.value === "number" || typeof field.value === "string" ? field.value : ""}
 									onChange={(event) => field.onChange(event.target.value)}
 								/>
 							</FormControl>
