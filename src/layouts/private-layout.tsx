@@ -72,7 +72,7 @@ export const PrivateLayout = () => {
     const checkPlan = async () => {
       try {
         const status = await BillingService.getStatus();
-        const planStatus = status?.plan?.status ?? "";
+        const planStatus = String(status?.plan?.status ?? "").toLowerCase();
         const isActive = planStatus === "active" || planStatus === "trialing";
         if (!isActive) {
           navigate("/planos", { replace: true });
@@ -84,21 +84,33 @@ export const PrivateLayout = () => {
 
     if (successCheckout) {
       let attempts = 0;
-      const maxAttempts = 6; 
+      const maxAttempts = 30;
 
       const pollStatus = async () => {
         attempts += 1;
         try {
           const status = await BillingService.getStatus();
-          const planStatus = status?.plan?.status ?? "";
+          const planStatus = String(status?.plan?.status ?? "").toLowerCase();
           const isActive = planStatus === "active" || planStatus === "trialing";
-          if (isActive) return;
+          if (isActive) {
+            navigate("/dashboard", { replace: true });
+            return;
+          }
+
+          const isBlocked =
+            planStatus === "canceled" ||
+            planStatus === "unpaid" ||
+            planStatus === "incomplete_expired";
+
+          if (isBlocked) {
+            navigate("/planos", { replace: true });
+            return;
+          }
         } catch {
           // ignore and retry
         }
 
         if (attempts >= maxAttempts) {
-          navigate("/planos", { replace: true });
           return;
         }
 
