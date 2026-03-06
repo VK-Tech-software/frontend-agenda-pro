@@ -73,8 +73,11 @@ export const PrivateLayout = () => {
       try {
         const status = await BillingService.getStatus();
         const planStatus = String(status?.plan?.status ?? "").toLowerCase();
+        const planCode = String(status?.plan?.plan_code ?? "").toLowerCase();
         const isActive = planStatus === "active" || planStatus === "trialing";
-        if (!isActive) {
+        const hasPlan = planCode.length > 0;
+
+        if (!isActive && !hasPlan) {
           navigate("/planos", { replace: true });
         }
       } catch {
