@@ -28,7 +28,9 @@ export const isPublicScheduleConfigured = (settings?: PublicScheduleSettings | n
 
   if (!isValidTime(start) || !isValidTime(end)) return false;
   if (toMinutes(start) >= toMinutes(end)) return false;
-  if (!Number.isFinite(slot) || Number(slot) <= 0) return false;
+  if (slot !== null && slot !== undefined) {
+    if (!Number.isFinite(slot) || Number(slot) <= 0) return false;
+  }
   if (days.length === 0) return false;
 
   return true;

@@ -37,7 +37,26 @@ export class PublicAvailabilityService {
   static async getCompanyInfo(companyId: number): Promise<PublicCompanyInfo | null> {
     const { data } = await api.get(`/public/companies/${companyId}`);
     const item = data?.dados ?? data?.data ?? data;
-    return item ?? null;
+    if (!item) return null;
+
+    const normalizedServices = Array.isArray(item.services)
+      ? item.services.map((service: any) => ({
+          id: Number(service.id),
+          service_name: service.service_name ?? service.name ?? "Servico",
+          price: service.price != null ? Number(service.price) : null,
+          duration:
+            service.duration != null
+              ? Number(service.duration)
+              : service.duration_minutes != null
+                ? Number(service.duration_minutes)
+                : null,
+        }))
+      : [];
+
+    return {
+      ...item,
+      services: normalizedServices,
+    } as PublicCompanyInfo;
   }
 
   static async listCompanies(): Promise<PublicCompanyItem[]> {
